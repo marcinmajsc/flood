@@ -65,7 +65,7 @@ const TorrentListColumnsList: FC<TorrentListColumnsListProps> = ({
           checkbox = (
             <span className="sortable-list__content sortable-list__content--secondary">
               <Checkbox
-                defaultChecked={torrentListColumnVisiblity[id]}
+                checked={torrentListColumnVisiblity[id]}
                 id={id}
                 onClick={(event) => {
                   torrentListColumnVisiblity[id] = (event.target as HTMLInputElement).checked;
@@ -124,7 +124,7 @@ const TorrentListColumnsList: FC<TorrentListColumnsListProps> = ({
             {showPercentChild ? (
               <div className="sortable-list__content__child">
                 <Checkbox
-                  defaultChecked={showProgressPercent}
+                  checked={showProgressPercent}
                   id="torrentListShowProgressPercent"
                   onClick={(event) => {
                     const isChecked = (event.target as HTMLInputElement).checked;
