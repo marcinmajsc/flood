@@ -16,7 +16,10 @@ interface ProgressBarProps {
 const ProgressBar: FC<ProgressBarProps> = observer(({percent, status, showPercentLabel = false}: ProgressBarProps) => {
   const {i18n} = useLingui();
   const clampedPercent = Math.min(Math.max(percent, 0), 100);
-  const percentLabel = i18n.number(clampedPercent, {minimumFractionDigits: 1, maximumFractionDigits: 1});
+  const percentLabel =
+    clampedPercent === 100
+      ? i18n.number(clampedPercent, {maximumFractionDigits: 0})
+      : i18n.number(clampedPercent, {minimumFractionDigits: 1, maximumFractionDigits: 1});
 
   return (
     <div className={classnames('progress-bar', {'progress-bar--with-percent': showPercentLabel})}>
