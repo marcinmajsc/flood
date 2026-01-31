@@ -28,6 +28,7 @@ import Duration from '@client/components/general/Duration';
 import ProgressBar from '@client/components/general/ProgressBar';
 import Size from '@client/components/general/Size';
 import {torrentStatusEffective} from '@client/util/torrentStatus';
+import SettingStore from '@client/stores/SettingStore';
 import TorrentStore from '@client/stores/TorrentStore';
 
 import type {TorrentListColumn} from '@client/constants/TorrentListColumns';
@@ -157,6 +158,11 @@ const DefaultTorrentListCellContent: FC<TorrentListCellContentProps> = observer(
           <ProgressBar
             percent={computed(() => Math.ceil(torrent.percentComplete)).get()}
             status={computed(() => torrentStatusEffective(torrent.status)).get()}
+            showPercentLabel={computed(
+              () =>
+                SettingStore.floodSettings.torrentListViewSize === 'condensed' &&
+                SettingStore.floodSettings.torrentListShowProgressPercent,
+            ).get()}
           />
         );
       default:
