@@ -24,6 +24,16 @@ const MiscUISettingsList: FC<MiscUISettingsListProps> = ({onSettingsChange}: Mis
             onSettingsChange({UIPageTitleSpeedEnabled: changedUIPageTitleSpeedEnabledRef.current});
           },
         },
+        {
+          label: 'settings.ui.torrent.list.progress.percent',
+          defaultChecked: changedTorrentListShowProgressPercentRef.current,
+          onClick: () => {
+            changedTorrentListShowProgressPercentRef.current = !changedTorrentListShowProgressPercentRef.current;
+            onSettingsChange({
+              torrentListShowProgressPercent: changedTorrentListShowProgressPercentRef.current,
+            });
+          },
+        },
       ]}
     />
   );
