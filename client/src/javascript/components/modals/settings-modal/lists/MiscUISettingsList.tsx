@@ -13,7 +13,6 @@ const MiscUISettingsList: FC<MiscUISettingsListProps> = ({onSettingsChange}: Mis
   const changedUIPageTitleSpeedEnabledRef = useRef<FloodSettings['UIPageTitleSpeedEnabled']>(
     SettingStore.floodSettings.UIPageTitleSpeedEnabled,
   );
-
   return (
     <ToggleList
       items={[
