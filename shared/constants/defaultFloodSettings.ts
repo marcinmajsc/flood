@@ -70,6 +70,7 @@ const defaultFloodSettings: Readonly<FloodSettings> = {
     {id: 'setPriority', visible: false},
   ],
   torrentListViewSize: 'condensed',
+  torrentListShowProgressPercent: true,
   speedLimits: {
     // B/s
     download: [1024, 10240, 102400, 512000, 1048576, 2097152, 5242880, 10485760, 0],
