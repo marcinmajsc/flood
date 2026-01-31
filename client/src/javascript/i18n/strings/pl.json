@@ -213,6 +213,7 @@
   "settings.ui.language": "Język",
   "settings.ui.misc": "Pozostałe",
   "settings.ui.page.title.speed": "Wyświetlaj prędkość pobierana i wysyłania w tytule strony",
+  "settings.ui.torrent.list.progress.percent": "Pokazuj procent postępu w widoku skondensowanym",
   "settings.ui.locale": "Język",
   "settings.ui.tag.selector.mode": "Ustawienia selektora tagów",
   "settings.ui.tag.selector.mode.multi": "Wielokrotne zaznaczenie",
