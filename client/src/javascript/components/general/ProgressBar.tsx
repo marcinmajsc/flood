@@ -15,14 +15,15 @@ interface ProgressBarProps {
 
 const ProgressBar: FC<ProgressBarProps> = observer(({percent, status, showPercentLabel = false}: ProgressBarProps) => {
   const {i18n} = useLingui();
-  const normalizedPercent = Math.min(Math.max(Math.round(percent), 0), 100);
+  const clampedPercent = Math.min(Math.max(percent, 0), 100);
+  const percentLabel = i18n.number(clampedPercent, {minimumFractionDigits: 1, maximumFractionDigits: 1});
 
   return (
     <div className={classnames('progress-bar', {'progress-bar--with-percent': showPercentLabel})}>
       <div className="progress-bar__icon">{status && <TorrentStatusIcon status={status} />}</div>
       <div className="progress-bar__fill__wrapper">
-        <div className="progress-bar__fill" style={{width: `${percent}%`}} />
-        {showPercentLabel ? <span className="progress-bar__percent">{i18n.number(normalizedPercent)}%</span> : null}
+        <div className="progress-bar__fill" style={{width: `${clampedPercent}%`}} />
+        {showPercentLabel ? <span className="progress-bar__percent">{percentLabel}%</span> : null}
       </div>
     </div>
   );

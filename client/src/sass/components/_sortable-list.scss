@@ -40,6 +40,13 @@ $sortable-list--item--border--preview: color.adjust($sortable-list--item--border
     height: 30px;
     padding: 0 math.div(variables.$spacing-unit * 1, 5);
 
+    &--stacked {
+      align-items: stretch;
+      height: auto;
+      padding-bottom: math.div(variables.$spacing-unit * 1, 5);
+      padding-top: math.div(variables.$spacing-unit * 1, 5);
+    }
+
     &:first-child {
       border-top-left-radius: 3px;
       border-top-right-radius: 3px;

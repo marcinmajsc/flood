@@ -156,7 +156,7 @@ const DefaultTorrentListCellContent: FC<TorrentListCellContentProps> = observer(
       case 'percentComplete':
         return (
           <ProgressBar
-            percent={computed(() => Math.ceil(torrent.percentComplete)).get()}
+            percent={computed(() => torrent.percentComplete).get()}
             status={computed(() => torrentStatusEffective(torrent.status)).get()}
             showPercentLabel={computed(
               () =>

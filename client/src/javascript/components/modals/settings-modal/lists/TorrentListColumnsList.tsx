@@ -43,12 +43,15 @@ const TorrentListColumnsList: FC<TorrentListColumnsListProps> = ({
 
   const lockedIDs =
     torrentListViewSize === 'expanded' ? ['name', 'eta', 'downRate', 'percentComplete', 'downTotal', 'upRate'] : [];
+  const hasPercentChild = (id: string) =>
+    id === 'percentComplete' && torrentListViewSize === 'condensed' && torrentListColumnVisiblity.percentComplete;
 
   return (
     <SortableList
       className="sortable-list--torrent-details"
       items={torrentListColumns.map(({id}) => id)}
       lockedIDs={lockedIDs}
+      getItemClassName={(id) => (hasPercentChild(id) ? 'sortable-list__item--stacked' : undefined)}
       onMouseDown={(): void => {
         tooltipRef.current?.dismissTooltip();
       }}
@@ -105,8 +108,7 @@ const TorrentListColumnsList: FC<TorrentListColumnsListProps> = ({
           );
         }
 
-        const showPercentChild =
-          id === 'percentComplete' && torrentListViewSize === 'condensed' && torrentListColumnVisiblity.percentComplete;
+        const showPercentChild = hasPercentChild(id);
 
         const content = (
           <div
