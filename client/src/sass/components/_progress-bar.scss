@@ -156,4 +156,49 @@ $progress-bar--height: 3px;
       }
     }
   }
+
+  &__percent {
+    @include themes.theme('color', 'torrent-list--background');
+    @include themes.theme('-webkit-text-stroke-color', 'progress-bar--fill');
+    font-size: 0.7rem;
+    font-weight: 600;
+    left: 50%;
+    line-height: 1;
+    pointer-events: none;
+    position: absolute;
+    -webkit-text-stroke-width: 1px;
+    paint-order: stroke fill;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+
+    .torrent--is-seeding & {
+      @include themes.theme('-webkit-text-stroke-color', 'progress-bar--fill--completed');
+    }
+
+    .torrent--is-stopped & {
+      @include themes.theme('-webkit-text-stroke-color', 'progress-bar--fill--stopped');
+    }
+
+    .torrent--has-error & {
+      @include themes.theme('-webkit-text-stroke-color', 'progress-bar--fill--error');
+    }
+
+    .torrent--is-checking & {
+      @include themes.theme('-webkit-text-stroke-color', 'progress-bar--fill--checking');
+    }
+
+    .torrent--is-selected & {
+      @include themes.theme('color', 'torrent--background--selected');
+      @include themes.theme('-webkit-text-stroke-color', 'progress-bar--fill--selected');
+    }
+
+    .torrent--is-selected.torrent--is-stopped & {
+      @include themes.theme('-webkit-text-stroke-color', 'progress-bar--fill--selected--stopped');
+    }
+
+    .torrent--has-error.torrent--is-stopped & {
+      @include themes.theme('-webkit-text-stroke-color', 'progress-bar--fill--error--stopped');
+    }
+  }
 }
