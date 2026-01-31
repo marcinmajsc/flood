@@ -32,6 +32,9 @@ const TorrentListColumnsList: FC<TorrentListColumnsListProps> = ({
         visible: false,
       })),
   ]);
+  const [showProgressPercent, setShowProgressPercent] = useState(
+    SettingStore.floodSettings.torrentListShowProgressPercent,
+  );
 
   const torrentListColumnVisiblity = torrentListColumns.reduce((memo, {id, visible}) => {
     memo[id] = visible;
@@ -102,13 +105,37 @@ const TorrentListColumnsList: FC<TorrentListColumnsListProps> = ({
           );
         }
 
+        const showPercentChild =
+          id === 'percentComplete' && torrentListViewSize === 'condensed' && torrentListColumnVisiblity.percentComplete;
+
         const content = (
-          <div className="sortable-list__content sortable-list__content__wrapper">
-            {warning}
-            <span className="sortable-list__content sortable-list__content--primary">
-              <Trans id={TorrentListColumns[id as TorrentListColumn]} />
-            </span>
-            {checkbox}
+          <div
+            className={`sortable-list__content sortable-list__content__wrapper${
+              showPercentChild ? ' sortable-list__content__wrapper--stacked' : ''
+            }`}
+          >
+            <div className="sortable-list__content__row">
+              {warning}
+              <span className="sortable-list__content sortable-list__content--primary">
+                <Trans id={TorrentListColumns[id as TorrentListColumn]} />
+              </span>
+              {checkbox}
+            </div>
+            {showPercentChild ? (
+              <div className="sortable-list__content__child">
+                <Checkbox
+                  defaultChecked={showProgressPercent}
+                  id="torrentListShowProgressPercent"
+                  onClick={(event) => {
+                    const isChecked = (event.target as HTMLInputElement).checked;
+                    setShowProgressPercent(isChecked);
+                    onSettingsChange({torrentListShowProgressPercent: isChecked});
+                  }}
+                >
+                  <Trans id="settings.ui.torrent.list.progress.percent" />
+                </Checkbox>
+              </div>
+            ) : null}
           </div>
         );
 
