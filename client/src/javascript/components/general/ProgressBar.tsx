@@ -17,7 +17,7 @@ const ProgressBar: FC<ProgressBarProps> = observer(({percent, status, showPercen
   const {i18n} = useLingui();
   const clampedPercent = Math.min(Math.max(percent, 0), 100);
   const percentLabel =
-    clampedPercent === 100
+    clampedPercent === 0 || clampedPercent === 100
       ? i18n.number(clampedPercent, {maximumFractionDigits: 0})
       : i18n.number(clampedPercent, {minimumFractionDigits: 1, maximumFractionDigits: 1});
 
