@@ -1,21 +1,23 @@
-@import './util/box-shadows';
+@use 'sass:meta';
 
-@import './config/spacing';
-@import './config/border-radius';
-@import './config/font-size';
-@import './config/speed';
-@import './config/variables';
+@include meta.load-css('./util/box-shadows');
 
-@import './components/button';
-@import './components/context-menu';
-@import './components/container';
-@import './components/error';
-@import './components/form';
-@import './components/element-addon';
-@import './components/icon';
-@import './components/input';
-@import './components/overlay';
-@import './components/panel';
-@import './components/portal';
-@import './components/section';
-@import './components/select';
+@include meta.load-css('./config/spacing');
+@include meta.load-css('./config/border-radius');
+@include meta.load-css('./config/font-size');
+@include meta.load-css('./config/speed');
+@include meta.load-css('./config/variables');
+
+@include meta.load-css('./components/button');
+@include meta.load-css('./components/context-menu');
+@include meta.load-css('./components/container');
+@include meta.load-css('./components/error');
+@include meta.load-css('./components/form');
+@include meta.load-css('./components/element-addon');
+@include meta.load-css('./components/icon');
+@include meta.load-css('./components/input');
+@include meta.load-css('./components/overlay');
+@include meta.load-css('./components/panel');
+@include meta.load-css('./components/portal');
+@include meta.load-css('./components/section');
+@include meta.load-css('./components/select');
