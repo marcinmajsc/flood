@@ -130,6 +130,22 @@ describe('POST /api/auth/register', () => {
     expect(res.headers['set-cookie']).toBeUndefined();
   });
 
+  it('Register duplicate user with different username casing', async () => {
+    const options: AuthRegistrationOptions = {
+      ...testNonAdminUser,
+      username: testNonAdminUser.username.toUpperCase(),
+    };
+    const res = await request
+      .post('/api/auth/register')
+      .send(options)
+      .set('Accept', 'application/json')
+      .set('Cookie', [testAdminUserToken])
+      .expect(500)
+      .expect('Content-Type', /json/);
+
+    expect(res.headers['set-cookie']).toBeUndefined();
+  });
+
   it('Register subsequent user with admin credentials expecting no cookie', async () => {
     const options: AuthRegistrationOptions = {
       ...testNonAdminUser,
@@ -317,6 +333,18 @@ describe('POST /api/auth/authenticate', () => {
       .expect('Content-Type', /json/)
       .expect('Set-Cookie', /jwt/);
   });
+  it('Authenticate with correct credentials and different username casing', async () => {
+    await request
+      .post('/api/auth/authenticate')
+      .send({
+        username: testAdminUser.username.toUpperCase(),
+        password: testAdminUser.password,
+      })
+      .set('Accept', 'application/json')
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .expect('Set-Cookie', /jwt/);
+  });
 });
 
 describe('GET /api/auth/users', () => {
@@ -385,6 +413,15 @@ describe('PATCH /api/auth/users/{username}', () => {
       .expect(200);
   });
 
+  it('Updates a user username to existing user with different casing', async () => {
+    await request
+      .patch(`/api/auth/users/${testNonAdminUser.username}`)
+      .send({username: testAdminUser.username.toUpperCase()})
+      .set('Accept', 'application/json')
+      .set('Cookie', [testAdminUserToken])
+      .expect(500);
+  });
+
   it('Updates an existing user with admin credentials and malformed data', async () => {
     await request
       .patch(`/api/auth/users/${testNonAdminUser.username}`)
@@ -417,6 +454,26 @@ describe('DELETE /api/auth/users/{username}', () => {
       .set('Accept', 'application/json')
       .set('Cookie', [testNonAdminUserToken])
       .expect(403);
+  });
+
+  it('Prevents deleting currently logged in user regardless of username case', async () => {
+    const authRes = await request
+      .post('/api/auth/authenticate')
+      .send({
+        username: testAdminUser.username.toUpperCase(),
+        password: testAdminUser.password,
+      })
+      .set('Accept', 'application/json')
+      .expect(200);
+
+    const [mixedCaseAdminToken] = authRes.headers['set-cookie'];
+
+    await request
+      .delete(`/api/auth/users/${testAdminUser.username}`)
+      .send()
+      .set('Accept', 'application/json')
+      .set('Cookie', [mixedCaseAdminToken])
+      .expect(400);
   });
 
   it('Deletes an existing user with admin credentials', async () => {

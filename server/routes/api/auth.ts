@@ -21,6 +21,7 @@ import {AccessLevel} from '../../../shared/schema/constants/Auth';
 import {NotFoundError, UnauthorizedError} from '../../errors';
 import {
   authenticateHook,
+  authenticateRequest,
   getRequiredAuthContext,
   resolveRequestUser,
   setAuthContext,
@@ -324,10 +325,24 @@ const authRoutes = async (fastify: FastifyInstance) => {
                   username: z.string(),
                 })
                 .strict(),
+              400: z
+                .object({
+                  message: z.string(),
+                })
+                .strict(),
             },
           },
         },
         async (req, reply): Promise<void> => {
+          if (req.user?.username == null) {
+            throw new UnauthorizedError();
+          }
+
+          if (req.user.username.toLowerCase() === req.params.username.toLowerCase()) {
+            reply.status(400).send({message: 'Cannot delete currently logged in user.'});
+            return;
+          }
+
           await Users.removeUser(req.params.username);
           reply.send({username: req.params.username});
         },
@@ -355,6 +370,10 @@ const authRoutes = async (fastify: FastifyInstance) => {
           const newUsername = await Users.updateUser(username, patch);
 
           const user = await Users.lookupUser(newUsername);
+
+          if (user == null) {
+            throw new Error();
+          }
 
           await destroyUserServices(user._id);
 
