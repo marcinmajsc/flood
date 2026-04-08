@@ -5,7 +5,6 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
 import webpack from 'webpack';
-import WebpackBar from 'webpackbar';
 
 import {buildPaths} from '../../shared/config/buildPaths.mjs';
 
@@ -134,7 +133,7 @@ export default {
     new webpack.optimize.MinChunkSizePlugin({
       minChunkSize: 10000,
     }),
-    new WebpackBar({name: 'client'}),
+    new webpack.ProgressPlugin(),
   ],
   optimization: {
     minimize: true,
