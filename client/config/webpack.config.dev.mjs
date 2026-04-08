@@ -5,7 +5,7 @@ import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import ESLintPlugin from 'eslint-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import WebpackBar from 'webpackbar';
+import webpack from 'webpack';
 
 import {buildPaths} from '../../shared/config/buildPaths.mjs';
 
@@ -132,7 +132,7 @@ export default {
     // Watcher doesn't work well if you mistype casing in a path so we use
     // a plugin that prints an error when you attempt to do this.
     new CaseSensitivePathsPlugin(),
-    new WebpackBar(),
+    new webpack.ProgressPlugin(),
   ],
   devtool: 'source-map',
   optimization: {
