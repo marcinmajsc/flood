@@ -2,6 +2,7 @@ import childProcess from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
+import send from '@fastify/send';
 import {normalizeTorrentUrl} from '@server/util/torrentUrlUtil';
 import type {ContentToken} from '@shared/schema/api/torrents';
 import {CreateTorrentOptionsSchema} from '@shared/types/api/torrents';
@@ -9,6 +10,7 @@ import contentDisposition from 'content-disposition';
 import type {CreateTorrentOptions, TorrentInput} from 'create-torrent';
 import type {FastifyInstance} from 'fastify';
 import {ZodTypeProvider} from 'fastify-type-provider-zod';
+import mime from 'mime-types';
 import sanitize from 'sanitize-filename';
 import tar, {Pack} from 'tar-fs';
 import {strictObject, string, z} from 'zod';
@@ -29,6 +31,7 @@ import {
   startTorrentsSchema,
   stopTorrentsSchema,
 } from '../../../shared/schema/api/torrents';
+import {getRequiredAuthContext} from '../../middleware/authenticate';
 import {getTempPath} from '../../models/TemporaryStorage';
 import type {ServiceInstances} from '../../services';
 import {asyncFilter} from '../../util/async';
@@ -42,7 +45,6 @@ import {
   sanitizePath,
 } from '../../util/fileUtil';
 import {rateLimit} from '../utils';
-import {getAuthedContext} from './requestContext';
 
 async function createTorrentAsync(input: TorrentInput, option: CreateTorrentOptions): Promise<Buffer> {
   const {default: createTorrent} = await import('create-torrent');
@@ -135,7 +137,7 @@ const torrentsRoutes = async (fastify: FastifyInstance) => {
       },
     },
     async (request) => {
-      const authedContext = getAuthedContext(request);
+      const authedContext = getRequiredAuthContext(request);
       const data = await authedContext.services.torrentService.fetchTorrentList();
       if (data == null) {
         throw new Error('Failed to fetch torrent list.');
@@ -163,7 +165,7 @@ const torrentsRoutes = async (fastify: FastifyInstance) => {
       },
     },
     async (request, reply) => {
-      const authedContext = getAuthedContext(request);
+      const authedContext = getRequiredAuthContext(request);
       const {urls, cookies, destination, tags, isBasePath, isCompleted, isSequential, isInitialSeeding, start} =
         request.body;
 
@@ -221,7 +223,7 @@ const torrentsRoutes = async (fastify: FastifyInstance) => {
       },
     },
     async (request, reply) => {
-      const authedContext = getAuthedContext(request);
+      const authedContext = getRequiredAuthContext(request);
       const {files, destination, tags, isBasePath, isCompleted, isSequential, isInitialSeeding, start} = request.body;
 
       const finalDestination = await getDestination(authedContext.services, {
@@ -273,7 +275,7 @@ const torrentsRoutes = async (fastify: FastifyInstance) => {
       },
     },
     async (request, reply) => {
-      const authedContext = getAuthedContext(request);
+      const authedContext = getRequiredAuthContext(request);
       const {name, sourcePath, trackers, comment, infoSource, isPrivate, isInitialSeeding, tags, start} = request.body;
 
       const sanitizedPath = sanitizePath(sourcePath);
@@ -341,7 +343,7 @@ const torrentsRoutes = async (fastify: FastifyInstance) => {
       },
     },
     async (request) => {
-      const authedContext = getAuthedContext(request);
+      const authedContext = getRequiredAuthContext(request);
       await authedContext.services.clientGatewayService.startTorrents(request.body);
       authedContext.services.torrentService.fetchTorrentList();
     },
@@ -363,7 +365,7 @@ const torrentsRoutes = async (fastify: FastifyInstance) => {
       },
     },
     async (request) => {
-      const authedContext = getAuthedContext(request);
+      const authedContext = getRequiredAuthContext(request);
       await authedContext.services.clientGatewayService.stopTorrents(request.body);
       authedContext.services.torrentService.fetchTorrentList();
     },
@@ -385,7 +387,7 @@ const torrentsRoutes = async (fastify: FastifyInstance) => {
       },
     },
     async (request) => {
-      const authedContext = getAuthedContext(request);
+      const authedContext = getRequiredAuthContext(request);
       await authedContext.services.clientGatewayService.checkTorrents(request.body);
       authedContext.services.torrentService.fetchTorrentList();
     },
@@ -408,7 +410,7 @@ const torrentsRoutes = async (fastify: FastifyInstance) => {
       },
     },
     async (request, reply) => {
-      const authedContext = getAuthedContext(request);
+      const authedContext = getRequiredAuthContext(request);
       let sanitizedPath: string | null = null;
 
       try {
@@ -446,7 +448,7 @@ const torrentsRoutes = async (fastify: FastifyInstance) => {
       },
     },
     async (request) => {
-      const authedContext = getAuthedContext(request);
+      const authedContext = getRequiredAuthContext(request);
       await authedContext.services.clientGatewayService.removeTorrents(request.body);
       authedContext.services.torrentService.fetchTorrentList();
     },
@@ -468,7 +470,7 @@ const torrentsRoutes = async (fastify: FastifyInstance) => {
       },
     },
     async (request) => {
-      const authedContext = getAuthedContext(request);
+      const authedContext = getRequiredAuthContext(request);
       await authedContext.services.clientGatewayService.reannounceTorrents(request.body);
       authedContext.services.clientGatewayService.fetchTorrentList();
     },
@@ -490,7 +492,7 @@ const torrentsRoutes = async (fastify: FastifyInstance) => {
       },
     },
     async (request) => {
-      const authedContext = getAuthedContext(request);
+      const authedContext = getRequiredAuthContext(request);
       await authedContext.services.clientGatewayService.setTorrentsInitialSeeding(request.body);
       authedContext.services.torrentService.fetchTorrentList();
     },
@@ -512,7 +514,7 @@ const torrentsRoutes = async (fastify: FastifyInstance) => {
       },
     },
     async (request) => {
-      const authedContext = getAuthedContext(request);
+      const authedContext = getRequiredAuthContext(request);
       await authedContext.services.clientGatewayService.setTorrentsPriority(request.body);
       authedContext.services.torrentService.fetchTorrentList();
     },
@@ -534,7 +536,7 @@ const torrentsRoutes = async (fastify: FastifyInstance) => {
       },
     },
     async (request) => {
-      const authedContext = getAuthedContext(request);
+      const authedContext = getRequiredAuthContext(request);
       await authedContext.services.clientGatewayService.setTorrentsSequential(request.body);
       authedContext.services.torrentService.fetchTorrentList();
     },
@@ -556,7 +558,7 @@ const torrentsRoutes = async (fastify: FastifyInstance) => {
       },
     },
     async (request) => {
-      const authedContext = getAuthedContext(request);
+      const authedContext = getRequiredAuthContext(request);
       await authedContext.services.clientGatewayService.setTorrentsTags(request.body);
       authedContext.services.torrentService.fetchTorrentList();
     },
@@ -578,7 +580,7 @@ const torrentsRoutes = async (fastify: FastifyInstance) => {
       },
     },
     async (request) => {
-      const authedContext = getAuthedContext(request);
+      const authedContext = getRequiredAuthContext(request);
       await authedContext.services.clientGatewayService.setTorrentsTrackers(request.body);
       authedContext.services.torrentService.fetchTorrentList();
     },
@@ -608,7 +610,7 @@ const torrentsRoutes = async (fastify: FastifyInstance) => {
       },
     },
     async (request, reply) => {
-      const authedContext = getAuthedContext(request);
+      const authedContext = getRequiredAuthContext(request);
       const {services} = authedContext;
       const hashes: Array<string> = request.params.hashes?.split(',').map((hash) => sanitize(hash));
       if (!Array.isArray(hashes) || hashes?.length < 1) {
@@ -674,7 +676,7 @@ const torrentsRoutes = async (fastify: FastifyInstance) => {
       },
     },
     async (request) => {
-      const authedContext = getAuthedContext(request);
+      const authedContext = getRequiredAuthContext(request);
       return authedContext.services.clientGatewayService.getTorrentContents(request.params.hash);
     },
   );
@@ -696,7 +698,7 @@ const torrentsRoutes = async (fastify: FastifyInstance) => {
       },
     },
     async (request) => {
-      const authedContext = getAuthedContext(request);
+      const authedContext = getRequiredAuthContext(request);
       await authedContext.services.clientGatewayService.setTorrentContentsPriority(request.params.hash, request.body);
     },
   );
@@ -724,7 +726,7 @@ const torrentsRoutes = async (fastify: FastifyInstance) => {
     },
     (request) => {
       const {hash, indices} = request.params;
-      const authedContext = getAuthedContext(request);
+      const authedContext = getRequiredAuthContext(request);
       const {user} = authedContext;
 
       return getToken<ContentToken>({
@@ -756,15 +758,19 @@ const torrentsRoutes = async (fastify: FastifyInstance) => {
         }),
         response: {
           200: z.unknown(),
+          206: z.unknown(),
+          304: z.unknown(),
+          400: z.unknown(),
           403: errorResponseSchema,
           404: z.unknown(),
+          416: z.unknown(),
           500: errorResponseSchema,
         },
       },
     },
     async (request, reply) => {
       const {hash, indices: stringIndices} = request.params;
-      const authedContext = getAuthedContext(request);
+      const authedContext = getRequiredAuthContext(request);
       const {services, user} = authedContext;
 
       if (request.query.token == null) {
@@ -822,22 +828,59 @@ const torrentsRoutes = async (fastify: FastifyInstance) => {
         const fileName = path.basename(file);
         const fileExt = path.extname(file);
 
-        let processedType: string = fileExt;
-        switch (fileExt) {
-          case '.mkv':
-            processedType = 'video/webm';
-            break;
-          case '.flac':
-            processedType = 'audio/flac';
-            break;
-          default:
-            break;
+        const result = await send(request.raw, file, {
+          acceptRanges: true,
+          lastModified: true,
+        });
+
+        const statusCode = result.statusCode;
+        if (result.type === 'error') {
+          if (statusCode === 404) {
+            const {code, message} = fileNotFoundError();
+            return reply.status(404).send({code, message});
+          }
+
+          if (statusCode === 403) {
+            const {code, message} = accessDeniedError();
+            return reply.status(403).send({code, message});
+          }
+
+          if (statusCode === 416) {
+            return reply.status(416).send({
+              code: 'ERR_RANGE_NOT_SATISFIABLE',
+              message: 'Range Not Satisfiable',
+            });
+          }
+
+          if (statusCode === 400) {
+            return reply.status(400).send({
+              code: 'ERR_BAD_REQUEST',
+              message: 'Bad Request',
+            });
+          }
+
+          return reply.status(500).send({
+            code: 'ERR_FILE_SEND',
+            message: 'Failed to send file.',
+          });
         }
 
-        reply.type(processedType);
-        reply.header('content-disposition', contentDisposition(fileName, {type: 'inline'}));
+        const successStatusCode = statusCode === 206 || statusCode === 304 ? statusCode : 200;
+        reply.status(successStatusCode);
+        reply.headers(result.headers);
 
-        return reply.send(fs.createReadStream(file));
+        if (statusCode === 304) {
+          return reply.send();
+        }
+
+        const processedType: string = mime.lookup(fileExt) || 'application/octet-stream';
+        if (!result.headers['content-type'] && !result.headers['Content-Type']) {
+          reply.type(processedType);
+        }
+
+        reply.header('Content-Disposition', contentDisposition(fileName, {type: 'inline'}));
+
+        return reply.send(result.stream);
       }
 
       const archiveRootFolder = sanitizePath(selectedTorrent.directory);
@@ -895,7 +938,7 @@ const torrentsRoutes = async (fastify: FastifyInstance) => {
       },
     },
     async (request) => {
-      const authedContext = getAuthedContext(request);
+      const authedContext = getRequiredAuthContext(request);
       const contents = authedContext.services.clientGatewayService.getTorrentContents(request.params.hash);
       const peers = authedContext.services.clientGatewayService.getTorrentPeers(request.params.hash);
       const trackers = authedContext.services.clientGatewayService.getTorrentTrackers(request.params.hash);
@@ -932,7 +975,7 @@ const torrentsRoutes = async (fastify: FastifyInstance) => {
       },
     },
     async (request, reply) => {
-      const authedContext = getAuthedContext(request);
+      const authedContext = getRequiredAuthContext(request);
       const torrentDirectory = authedContext.services.torrentService.getTorrent(request.params.hash)?.directory;
       const torrentContents = await authedContext.services.clientGatewayService
         .getTorrentContents(request.params.hash)
@@ -1010,7 +1053,7 @@ const torrentsRoutes = async (fastify: FastifyInstance) => {
       },
     },
     async (request) => {
-      const authedContext = getAuthedContext(request);
+      const authedContext = getRequiredAuthContext(request);
       return authedContext.services.clientGatewayService.getTorrentPeers(request.params.hash);
     },
   );
@@ -1031,7 +1074,7 @@ const torrentsRoutes = async (fastify: FastifyInstance) => {
       },
     },
     async (request) => {
-      const authedContext = getAuthedContext(request);
+      const authedContext = getRequiredAuthContext(request);
       return authedContext.services.clientGatewayService.getTorrentTrackers(request.params.hash);
     },
   );
