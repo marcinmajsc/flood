@@ -393,5 +393,20 @@
   "unit.time.minute": "m",
   "unit.time.second": "s",
   "unit.time.week": "tyg.",
-  "unit.time.year": "lat"
+  "unit.time.year": "lat",
+  "settings.about.latest.release": "Najnowsze wydanie",
+  "settings.about.commits.since": "zatwierdzenia od",
+  "settings.about.commits.since.title": "zatwierdzenia od wersji użytkownika",
+  "settings.about.description": "Flood to usługa monitorująca różne klienty torrentów. To usługa Node.js, która komunikuje się z Twoim ulubionym klientem torrentów i udostępnia przyzwoity interfejs internetowy do administracji. Ten projekt jest oparty na",
+  "settings.about.original.project": "oryginalny projekt Flood",
+  "settings.about.feedback.heading": "Opinia",
+  "settings.about.feedback.body.first": "Jeśli masz konkretny problem lub błąd, zgłoś go",
+  "settings.about.feedback.github.issue": "GitHub issue",
+  "settings.about.feedback.body.second": "Dołącz do",
+  "settings.about.feedback.discord": "Flood Discord serwer",
+  "settings.about.feedback.body.third": "aby omówić prośby o funkcje i szczegóły implementacji.",
+  "settings.about.more.info.heading": "Więcej informacji",
+  "settings.about.more.info.body.first": "Sprawdź",
+  "settings.about.more.info.wiki": "Wiki",
+  "settings.about.more.info.body.second": "aby uzyskać więcej informacji."
 }
